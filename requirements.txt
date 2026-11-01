@@ -3,4 +3,4 @@ uvicorn
 yfinance
 pandas
 httpx
-mcp
+mcp<2
