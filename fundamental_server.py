@@ -1,4 +1,4 @@
-import os
+[cite: 1]import os
 import json
 import httpx
 import asyncio
@@ -13,7 +13,6 @@ FINNHUB_API_KEY = "dbibn7hr01qie36m6eggdbibn7hr01qie36m6eh0"
 
 async def fetch_taiwan_stock(symbol: str) -> dict:
     """使用 yfinance 抓取台股基本面"""
-    # yfinance 為同步 IO 函式庫，使用 asyncio.to_thread 避免阻塞事件迴圈
     def _fetch():
         ticker = yf.Ticker(symbol)
         return ticker.info
@@ -26,7 +25,6 @@ async def fetch_taiwan_stock(symbol: str) -> dict:
     pe_ratio = info.get("trailingPE")
     eps = info.get("trailingEps")
     
-    # yfinance 回傳的比例通常為小數 (例如 0.27 代表 27%)，將其正規化為百分比
     roe = info.get("returnOnEquity")
     roe = roe * 100 if roe is not None else None
         
@@ -92,6 +90,20 @@ async def fetch_us_stock(symbol: str) -> dict:
         "score": score
     }
 
+async def fetch_fundamental_data(symbol: str) -> dict:
+    """
+    對外提供給 FastAPI 雲端網關調用的核心封裝函數
+    """
+    symbol = symbol.upper().strip()
+    is_tw_stock = any(char.isdigit() for char in symbol) or symbol.endswith(".TW") or symbol.endswith(".TWO")
+    
+    if is_tw_stock:
+        if symbol.isdigit():
+            symbol = f"{symbol}.TW"
+        return await fetch_taiwan_stock(symbol)
+    else:
+        return await fetch_us_stock(symbol)
+
 @mcp.tool()
 async def get_fundamental_analysis(symbol: str) -> str:
     """
@@ -101,20 +113,7 @@ async def get_fundamental_analysis(symbol: str) -> str:
     Args:
         symbol: 股票代號 (例如: TSM, AAPL, 2330, 0050.TW)
     """
-    symbol = symbol.upper().strip()
-    
-    # 【資料源路由判斷】
-    # 只要包含數字，或結尾是 .TW / .TWO，就判定為台股
-    is_tw_stock = any(char.isdigit() for char in symbol) or symbol.endswith(".TW") or symbol.endswith(".TWO")
-    
-    if is_tw_stock:
-        # 正規化：如果使用者只有輸入數字 (如 2330)，自動幫忙補上 .TW
-        if symbol.isdigit():
-            symbol = f"{symbol}.TW"
-        report_dict = await fetch_taiwan_stock(symbol)
-    else:
-        report_dict = await fetch_us_stock(symbol)
-        
+    report_dict = await fetch_fundamental_data(symbol)
     return json.dumps(report_dict, ensure_ascii=False)
 
 if __name__ == "__main__":
