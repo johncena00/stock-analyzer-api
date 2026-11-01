@@ -105,7 +105,7 @@ async def fetch_us_chip(symbol: str) -> dict:
     }
 
 @mcp.tool()
-async def get_chip_analysis(symbol: str) -> str:
+async def fetch_chip_data(symbol: str) -> str:
     """獲取股票籌碼面數據 (台股為三大法人買賣超，美股為內部人情緒)。"""
     symbol = symbol.upper().strip()
     is_tw_stock = any(char.isdigit() for char in symbol) or symbol.endswith(".TW") or symbol.endswith(".TWO")
