@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 import asyncio
 
 # 引入你原本寫好的四個分析核心邏輯函數
@@ -11,7 +11,8 @@ from sentiment_server import fetch_sentiment_data
 
 app = FastAPI(title="Stock Analyzer Cloud Gateway", version="1.0")
 
-class AnalyzeRequest(BaseModel.model_config = {"extra": "allow"}, **{"symbol": str})
+class AnalyzeRequest(BaseModel):
+    model_config = ConfigDict(extra="allow")
     symbol: str
 
 @app.post("/api/analyze")
