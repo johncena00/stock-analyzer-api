@@ -1,0 +1,193 @@
+from enum import Enum
+
+
+class Dataset(str, Enum):
+    TaiwanStockBalanceSheet = "TaiwanStockBalanceSheet"
+    TaiwanStockFinancialStatements = "TaiwanStockFinancialStatements"
+    TaiwanStockInstitutionalInvestorsBuySell = (
+        "TaiwanStockInstitutionalInvestorsBuySell"
+    )
+    TaiwanStockInstitutionalInvestorsBuySellWide = (
+        "TaiwanStockInstitutionalInvestorsBuySellWide"
+    )
+    TaiwanStockTotalInstitutionalInvestors = (
+        "TaiwanStockTotalInstitutionalInvestors"
+    )
+    TaiwanStockShareholding = "TaiwanStockShareholding"
+    TaiwanStockPER = "TaiwanStockPER"
+    TaiwanStockPrice = "TaiwanStockPrice"
+    TaiwanStockCashFlowsStatement = "TaiwanStockCashFlowsStatement"
+    TaiwanStockMonthRevenue = "TaiwanStockMonthRevenue"
+    TaiwanStockMarginPurchaseShortSale = "TaiwanStockMarginPurchaseShortSale"
+    TaiwanDailyShortSaleBalances = "TaiwanDailyShortSaleBalances"
+    CrudeOilPrices = "CrudeOilPrices"
+    CnnFearGreedIndex = "CnnFearGreedIndex"
+    TaiwanExchangeRate = "TaiwanExchangeRate"
+    ExchangeRate = "ExchangeRate"
+    TaiwanStockPriceTick = "TaiwanStockPriceTick"
+    TaiwanFuturesTick = "TaiwanFuturesTick"
+    TaiwanFuturesSpreadTick = "TaiwanFuturesSpreadTick"
+    TaiwanOptionTick = "TaiwanOptionTick"
+    TaiwanStockPriceBidAsk = "TaiwanStockPriceBidAsk"
+    TaiwanFuturesDaily = "TaiwanFuturesDaily"
+    TaiwanFuturesKBar = "TaiwanFuturesKBar"
+    TaiwanOptionDaily = "TaiwanOptionDaily"
+    TaiwanStockNews = "TaiwanStockNews"
+    TaiwanStockTotalReturnIndex = "TaiwanStockTotalReturnIndex"
+    USStockPrice = "USStockPrice"
+    TaiwanStockDividendResult = "TaiwanStockDividendResult"
+    TaiwanStockInfo = "TaiwanStockInfo"
+    TaiwanStockInfoWithWarrant = "TaiwanStockInfoWithWarrant"
+    TaiwanStockActiveETFInfo = "TaiwanStockActiveETFInfo"
+    TaiwanStockSecuritiesLending = "TaiwanStockSecuritiesLending"
+    TaiwanFutOptTickInfo = "TaiwanFutOptTickInfo"
+    TaiwanFutOptDailyInfo = "TaiwanFutOptDailyInfo"
+    TaiwanStockHoldingSharesPer = "TaiwanStockHoldingSharesPer"
+    TaiwanStockDividend = "TaiwanStockDividend"
+    TaiwanStockTotalMarginPurchaseShortSale = (
+        "TaiwanStockTotalMarginPurchaseShortSale"
+    )
+    EuropeStockInfo = "EuropeStockInfo"
+    JapanStockInfo = "JapanStockInfo"
+    GoldPrice = "GoldPrice"
+    InterestRate = "InterestRate"
+    USStockInfo = "USStockInfo"
+    UKStockInfo = "UKStockInfo"
+    TaiwanStockStatisticsOfOrderBookAndTrade = (
+        "TaiwanStockStatisticsOfOrderBookAndTrade"
+    )
+    TaiwanFutOptTick = "TaiwanFutOptTick"
+    TaiwanVariousIndicators5Seconds = "TaiwanVariousIndicators5Seconds"
+    TaiwanFuturesInstitutionalInvestors = "TaiwanFuturesInstitutionalInvestors"
+    TaiwanOptionInstitutionalInvestors = "TaiwanOptionInstitutionalInvestors"
+    TaiwanFuturesInstitutionalInvestorsAfterHours = (
+        "TaiwanFuturesInstitutionalInvestorsAfterHours"
+    )
+    TaiwanOptionInstitutionalInvestorsAfterHours = (
+        "TaiwanOptionInstitutionalInvestorsAfterHours"
+    )
+    TaiwanFuturesDealerTradingVolumeDaily = (
+        "TaiwanFuturesDealerTradingVolumeDaily"
+    )
+    TaiwanOptionDealerTradingVolumeDaily = (
+        "TaiwanOptionDealerTradingVolumeDaily"
+    )
+    GovernmentBondsYield = "GovernmentBondsYield"
+    USStockPriceMinute = "USStockPriceMinute"
+    TaiwanStockDayTrading = "TaiwanStockDayTrading"
+    TaiwanStockEvery5SecondsIndex = "TaiwanStockEvery5SecondsIndex"
+    TaiwanStockCapitalReductionReferencePrice = (
+        "TaiwanStockCapitalReductionReferencePrice"
+    )
+    TaiwanStockGovernmentBankBuySell = "TaiwanStockGovernmentBankBuySell"
+    TaiwanSecuritiesTraderInfo = "TaiwanSecuritiesTraderInfo"
+    TaiwanStockMarketValue = "TaiwanStockMarketValue"
+    TaiwanStockPriceLimit = "TaiwanStockPriceLimit"
+    TaiwanStock10Year = "TaiwanStock10Year"
+    TaiwanStockTickSnapshot = "taiwan_stock_tick_snapshot"
+    TaiwanFuturesSnapshot = "taiwan_futures_snapshot"
+    TaiwanOptionsSnapshot = "taiwan_options_snapshot"
+    TaiwanStockPriceAdj = "TaiwanStockPriceAdj"
+    TaiwanStockKBar = "TaiwanStockKBar"
+    TaiwanStockDelisting = "TaiwanStockDelisting"
+    TaiwanStockConvertibleBondInfo = "TaiwanStockConvertibleBondInfo"
+    TaiwanStockConvertibleBondDaily = "TaiwanStockConvertibleBondDaily"
+    TaiwanStockConvertibleBondInstitutionalInvestors = (
+        "TaiwanStockConvertibleBondInstitutionalInvestors"
+    )
+    TaiwanStockConvertibleBondDailyOverview = (
+        "TaiwanStockConvertibleBondDailyOverview"
+    )
+    TaiwanStockMarginShortSaleSuspension = (
+        "TaiwanStockMarginShortSaleSuspension"
+    )
+    TaiwanTotalExchangeMarginMaintenance = (
+        "TaiwanTotalExchangeMarginMaintenance"
+    )
+    TaiwanStockWeekPrice = "TaiwanStockWeekPrice"
+    TaiwanStockMonthPrice = "TaiwanStockMonthPrice"
+    TaiwanStockTradingDailyReportSecIdAgg = (
+        "TaiwanStockTradingDailyReportSecIdAgg"
+    )
+    TaiwanStockTradingDailyReport = "TaiwanStockTradingDailyReport"
+    TaiwanStockWarrantTradingDailyReport = (
+        "TaiwanStockWarrantTradingDailyReport"
+    )
+    TaiwanOptionOpenInterestLargeTraders = (
+        "TaiwanOptionOpenInterestLargeTraders"
+    )
+    TaiwanFuturesOpenInterestLargeTraders = (
+        "TaiwanFuturesOpenInterestLargeTraders"
+    )
+    TaiwanStockMarketValueWeight = "TaiwanStockMarketValueWeight"
+    TaiwanBusinessIndicator = "TaiwanBusinessIndicator"
+    TaiwanStockDispositionSecuritiesPeriod = (
+        "TaiwanStockDispositionSecuritiesPeriod"
+    )
+    TaiwanStockIndustryChain = "TaiwanStockIndustryChain"
+    TaiwanStockIndustryChainMoneyFlow = "TaiwanStockIndustryChainMoneyFlow"
+    TaiwanStockTradingDate = "TaiwanStockTradingDate"
+    TaiwanStockInfoWithWarrantSummary = "TaiwanStockInfoWithWarrantSummary"
+    TaiwanStockSplitPrice = "TaiwanStockSplitPrice"
+    TaiwanStockParValueChange = "TaiwanStockParValueChange"
+    TaiwanStockSuspended = "TaiwanStockSuspended"
+    TaiwanStockDayTradingSuspension = "TaiwanStockDayTradingSuspension"
+    TaiwanStockDayTradingBorrowingFeeRate = (
+        "TaiwanStockDayTradingBorrowingFeeRate"
+    )
+    TaiwanFuturesSpreadTrading = "TaiwanFuturesSpreadTrading"
+    TaiwanFuturesFinalSettlementPrice = "TaiwanFuturesFinalSettlementPrice"
+    TaiwanOptionFinalSettlementPrice = "TaiwanOptionFinalSettlementPrice"
+    TaiwanStockBlockTrade = "TaiwanStockBlockTrade"
+    TaiwanStockAfterHoursFixedPriceTrading = (
+        "TaiwanStockAfterHoursFixedPriceTrading"
+    )
+    TaiwanStockLoanCollateralBalance = "TaiwanStockLoanCollateralBalance"
+    TaiwanStockActiveETFHolding = "TaiwanStockActiveETFHolding"
+    TaiwanStockActiveETFHoldingChange = "TaiwanStockActiveETFHoldingChange"
+    TaiwanStockConvertibleBondMonthlyAnalysis = (
+        "TaiwanStockConvertibleBondMonthlyAnalysis"
+    )
+    TaiwanStockConvertibleBondPutProvision = (
+        "TaiwanStockConvertibleBondPutProvision"
+    )
+    TaiwanOptionVix = "TaiwanOptionVix"
+    TaiwanAssetSwapFixedIncomeDaily = "TaiwanAssetSwapFixedIncomeDaily"
+    TaiwanAssetSwapOptionDaily = "TaiwanAssetSwapOptionDaily"
+    TaiwanStockMarginMaintenance = "TaiwanStockMarginMaintenance"
+    TaiwanStockBrokerDailyConcentration = "TaiwanStockBrokerDailyConcentration"
+    TaiwanStockFinancialReportFile = "TaiwanStockFinancialReportFile"
+
+
+class Version(str, Enum):
+    V4 = "v4"
+    V3 = "v3"
+
+
+class DataList(str, Enum):
+    CrudeOilPrices = "CrudeOilPrices"
+    CurrencyCirculation = "CurrencyCirculation"
+    ExchangeRate = "ExchangeRate"
+    GovernmentBondsYield = "GovernmentBondsYield"
+    GovernmentBonds = "GovernmentBonds"
+    InterestRate = "InterestRate"
+    TaiwanExchangeRate = "TaiwanExchangeRate"
+
+
+class Translation(str, Enum):
+    TaiwanStockBalanceSheet = "TaiwanStockBalanceSheet"
+    TaiwanStockFinancialStatements = "TaiwanStockFinancialStatements"
+    TaiwanStockInstitutionalInvestorsBuySell = (
+        "TaiwanStockInstitutionalInvestorsBuySell"
+    )
+    RawMaterialFuturesPrices = "RawMaterialFuturesPrices"
+    TaiwanStockShareholding = "TaiwanStockShareholding"
+    TaiwanStockDividend = "TaiwanStockDividend"
+    TaiwanStockCashFlowsStatement = "TaiwanStockCashFlowsStatement"
+    TaiwanFutures = "TaiwanFutures"
+    TaiwanOption = "TaiwanOption"
+    TaiwanStockTotalMarginPurchaseShortSale = (
+        "TaiwanStockTotalMarginPurchaseShortSale"
+    )
+    TaiwanStockMarginPurchaseShortSale = "TaiwanStockMarginPurchaseShortSale"
+    USStockPrice = "USStockPrice"

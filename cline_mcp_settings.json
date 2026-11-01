@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "fundamental-analyzer": {
+      "command": "python",
+      "args": [
+        "/Users/devilcry/mcp-agent/fundamental_server.py"
+      ],
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "chip-analyzer": {
+      "command": "python",
+      "args": [
+        "/Users/devilcry/mcp-agent/chip_server.py"
+      ],
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "tech-analyzer": {
+      "command": "python",
+      "args": [
+        "/Users/devilcry/mcp-agent/tech_server.py"
+      ],
+      "disabled": false,
+      "alwaysAllow": []
+    },
+    "sentiment-analyzer": {
+      "command": "python",
+      "args": [
+        "/Users/devilcry/mcp-agent/sentiment_server.py"
+      ],
+      "disabled": false,
+      "alwaysAllow": []
+    }
+  }
+}
