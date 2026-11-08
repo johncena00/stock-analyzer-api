@@ -10,7 +10,7 @@ from models import WatchlistRequest, AnalyzeRequest
 from stock_scanner import run_single_scan
 
 from fundamental_server import get_fundamental_analysis
-from chip_server import get_sentiment_analysis
+from chip_server import fetch_chip_data
 from tech_server import get_technical_analysis
 from sentiment_server import get_sentiment_analysis
 
@@ -68,10 +68,10 @@ async def analyze_stock(request: AnalyzeRequest):
     async with httpx.AsyncClient(timeout=45.0) as client:
         # 並發分派任務給 analyzer.py 的四大模組
         fund, tech, chip, sent = await asyncio.gather(
-            analyze_fundamental(client, request.symbol),
-            analyze_technical(client, request.symbol),
-            analyze_chip(client, request.symbol),
-            analyze_sentiment(client, request.symbol)
+            get_fundamental_analysis(client, request.symbol),
+            get_technical_analysis(client, request.symbol),
+            fetch_chip_data(client, request.symbol),
+            get_sentiment_analysis(client, request.symbol)
         )
         
     return {
