@@ -9,10 +9,10 @@ from models import WatchlistRequest, AnalyzeRequest
 # 從 scanner.py 匯入選股雷達邏輯
 from stock_scanner import run_single_scan
 
-from fundamental_server import analyze_fundamental
-from chip_server import analyze_chip
-from tech_server import analyze_technical
-from sentiment_server import analyze_sentiment
+from fundamental_server import get_fundamental_analysis
+from chip_server import get_sentiment_analysis
+from tech_server import get_technical_analysis
+from sentiment_server import get_sentiment_analysis
 
 # --- 建立 FastAPI 實例 ---
 app = FastAPI(
