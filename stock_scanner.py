@@ -3,106 +3,163 @@ import httpx
 import pandas as pd
 from datetime import datetime, timedelta
 
+# Finnhub API 金鑰
+FINNHUB_API_KEY = "dbibn7hr01qie36m6eggdbibn7hr01qie36m6eh0"
+
+# ==========================================
+# 條件一：月營收年增率 (台股保留 FinMind 確保資料完整)
+# ==========================================
 async def check_revenue_growth(client: httpx.AsyncClient, symbol: str) -> bool:
-    """條件一：過去一年內，最新連續三個月的「月營收年增率 (YoY)」皆大於 0"""
-    start_date = (datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d")
+    clean_symbol = symbol.replace(".TW", "").replace(".TWO", "").strip()
+    start_date = (datetime.now() - timedelta(days=200)).strftime("%Y-%m-%d")
+    
     url = "https://api.finmindtrade.com/api/v4/data"
     params = {
         "dataset": "TaiwanStockMonthRevenue",
-        "data_id": symbol,
+        "data_id": clean_symbol,
         "start_date": start_date
     }
     
     try:
-        response = await client.get(url, params=params, timeout=15.0)
+        response = await client.get(url, params=params, timeout=10.0)
         response.raise_for_status()
         data = response.json()
         
-        if data.get("status") == 200 and data.get("data"):
-            df = pd.DataFrame(data["data"])
-            if len(df) >= 3:
-                latest_3_months = df.tail(3)
-                # 檢查這三個月的營收年增率是否都大於 0
-                if all(latest_3_months["revenue_YearOnYear_ratio"] > 0):
-                    return True
-        return False
-    except Exception:
-        return False
-
-async def check_technical_ma60(symbol: str) -> bool:
-    """條件二：目前最新收盤價站上季線 (60MA)"""
-    yf_symbol = f"{symbol}.TW"
-    
-    def _fetch_history():
-        import yfinance as yf
-        ticker = yf.Ticker(yf_symbol)
-        return ticker.history(period="6mo")
-    
-    try:
-        # 使用 to_thread 避免 yfinance 的同步阻塞影響 FastAPI 非同步效能
-        hist = await asyncio.to_thread(_fetch_history)
-        if len(hist) < 60:
+        records = data.get("data", [])
+        if not records:
             return False
             
-        ma_60 = hist['Close'].rolling(window=60).mean().iloc[-1]
-        latest_close = hist['Close'].iloc[-1]
-        
-        return latest_close > ma_60
+        df = pd.DataFrame(records)
+        if len(df) >= 3:
+            yoy_col = next((c for c in ["revenue_year_on_year_ratio", "revenue_YearOnYear_ratio"] if c in df.columns), None)
+            if not yoy_col:
+                return False
+                
+            latest_3 = df.tail(3)
+            ratios = pd.to_numeric(latest_3[yoy_col], errors='coerce')
+            return bool((ratios > 0).all())
+        return False
     except Exception:
         return False
 
+
+# ==========================================
+# 條件二：股價站上季線 (全面使用 Finnhub /stock/candle)
+# ==========================================
+async def check_technical_ma60_finnhub(client: httpx.AsyncClient, symbol: str) -> bool:
+    """使用 Finnhub 抓取近 120 天日 K 線，計算 60MA"""
+    clean_symbol = symbol.upper().strip()
+    
+    # 判斷台股標的格式補齊 .TW
+    if clean_symbol.isdigit() and len(clean_symbol) == 4:
+        clean_symbol = f"{clean_symbol}.TW"
+        
+    _to = int(datetime.now().timestamp())
+    _from = int((datetime.now() - timedelta(days=150)).timestamp())
+    
+    url = "https://finnhub.io/api/v1/stock/candle"
+    params = {
+        "symbol": clean_symbol,
+        "resolution": "D",
+        "from": _from,
+        "to": _to,
+        "token": FINNHUB_API_KEY
+    }
+    
+    try:
+        response = await client.get(url, params=params, timeout=10.0)
+        response.raise_for_status()
+        data = response.json()
+        
+        # Finnhub 成功時 "s" 欄位會為 "ok"，"c" 為收盤價列表 (Close)
+        if data.get("s") != "ok" or not data.get("c"):
+            # 若為台股且查無資料，嘗試切換上櫃代號 .TWO
+            if clean_symbol.endswith(".TW"):
+                params["symbol"] = clean_symbol.replace(".TW", ".TWO")
+                resp_alt = await client.get(url, params=params, timeout=10.0)
+                data = resp_alt.json()
+                if data.get("s") != "ok" or not data.get("c"):
+                    return False
+            else:
+                return False
+                
+        close_prices = data.get("c", [])
+        if len(close_prices) < 60:
+            return False
+            
+        series = pd.Series(close_prices)
+        ma_60 = series.rolling(window=60).mean().iloc[-1]
+        latest_close = series.iloc[-1]
+        
+        return bool(latest_close > ma_60)
+    except Exception:
+        return False
+
+
+# ==========================================
+# 條件三：外資近五日淨買超 (FinMind)
+# ==========================================
 async def check_foreign_investor_buy(client: httpx.AsyncClient, symbol: str) -> bool:
-    """條件三：外資近五日累計買賣超加總大於 0 (淨買超)"""
-    start_date = (datetime.now() - timedelta(days=20)).strftime("%Y-%m-%d")
+    clean_symbol = symbol.replace(".TW", "").replace(".TWO", "").strip()
+    start_date = (datetime.now() - timedelta(days=25)).strftime("%Y-%m-%d")
+    
     url = "https://api.finmindtrade.com/api/v4/data"
     params = {
         "dataset": "TaiwanStockInstitutionalInvestorsBuySell",
-        "data_id": symbol,
+        "data_id": clean_symbol,
         "start_date": start_date
     }
     
     try:
-        response = await client.get(url, params=params, timeout=15.0)
+        response = await client.get(url, params=params, timeout=10.0)
         response.raise_for_status()
         data = response.json()
         
-        if data.get("status") == 200 and data.get("data"):
-            df = pd.DataFrame(data["data"])
-            if df.empty:
-                return False
+        records = data.get("data", [])
+        if not records:
+            return False
             
-            # 篩選出包含「外資」的欄位
-            df_foreign = df[df['name'].str.contains('外資')]
-            if df_foreign.empty:
-                return False
-                
-            # 依日期加總買賣超
-            df_grouped = df_foreign.groupby('date')[['buy', 'sell']].sum().reset_index()
-            df_grouped = df_grouped.sort_values('date', ascending=False).head(5)
+        df = pd.DataFrame(records)
+        if df.empty or 'name' not in df.columns:
+            return False
+        
+        is_foreign = df['name'].astype(str).str.contains('外資|foreign', case=False, na=False)
+        df_foreign = df[is_foreign]
+        if df_foreign.empty:
+            return False
             
-            # 計算近五日總計：總買進 - 總賣出
-            net_buy = (df_grouped['buy'] - df_grouped['sell']).sum()
-            
-            return net_buy > 0
-        return False
+        df_foreign['buy'] = pd.to_numeric(df_foreign['buy'], errors='coerce').fillna(0)
+        df_foreign['sell'] = pd.to_numeric(df_foreign['sell'], errors='coerce').fillna(0)
+        
+        df_grouped = df_foreign.groupby('date')[['buy', 'sell']].sum().reset_index()
+        df_grouped = df_grouped.sort_values('date', ascending=False).head(5)
+        
+        net_buy = (df_grouped['buy'] - df_grouped['sell']).sum()
+        return bool(net_buy > 0)
     except Exception:
         return False
 
+
+# ==========================================
+# 單一標的快篩整合函式
+# ==========================================
 async def run_single_scan(client: httpx.AsyncClient, symbol: str) -> dict:
-    """
-    針對單一股票代號，並發執行「營收、季線、外資」三大條件檢查
-    回傳該標的的檢核細節與是否達標 (is_target)
-    """
     revenue_task = check_revenue_growth(client, symbol)
-    tech_task = check_technical_ma60(symbol)
+    tech_task = check_technical_ma60_finnhub(client, symbol)
     chip_task = check_foreign_investor_buy(client, symbol)
     
-    rev_pass, tech_pass, chip_pass = await asyncio.gather(revenue_task, tech_task, chip_task)
+    rev_pass, tech_pass, chip_pass = await asyncio.gather(
+        revenue_task, tech_task, chip_task, return_exceptions=True
+    )
+    
+    rev_result = bool(rev_pass) if isinstance(rev_pass, bool) else False
+    tech_result = bool(tech_pass) if isinstance(tech_pass, bool) else False
+    chip_result = bool(chip_pass) if isinstance(chip_pass, bool) else False
     
     return {
         "symbol": symbol,
-        "revenue_pass": rev_pass,
-        "tech_pass": tech_pass,
-        "chip_pass": chip_pass,
-        "is_target": rev_pass and tech_pass and chip_pass
+        "revenue_pass": rev_result,
+        "tech_pass": tech_result,
+        "chip_pass": chip_result,
+        "is_target": rev_result and tech_result and chip_result
     }
