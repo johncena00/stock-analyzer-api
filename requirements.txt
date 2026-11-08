@@ -3,4 +3,6 @@ uvicorn
 yfinance
 pandas
 httpx
+pydantic
+numpy
 mcp<2
